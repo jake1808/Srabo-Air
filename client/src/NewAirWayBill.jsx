@@ -83,7 +83,7 @@ function NewAirWayBill({ token, onBack, onCreated }) {
       data.append('total', total)
       if (file) data.append('pdf', file)
 
-      const res = await fetch('/api/awbs', {
+      const res = await fetch('/api/create_awb', {
         method: 'POST',
         headers: { 'x-access-token': token }, // no Content-Type: browser sets it
         body: data,
