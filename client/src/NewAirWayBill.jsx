@@ -186,6 +186,7 @@ function NewAirWayBill({ token, onBack, onCreated }) {
   const [fileError, setFileError] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [created, setCreated] = useState(null)
 
   const total = useMemo(() => {
     const cw = parseFloat(form.chargeable_weight)
@@ -258,11 +259,20 @@ function NewAirWayBill({ token, onBack, onCreated }) {
           payload?.error || payload?.message || `Request failed (${res.status})`
         )
       }
-      onCreated()
+      setCreated(payload?.awb?.awb_no ?? form.awb_no)
+      setSubmitting(false)
     } catch (err) {
       setError(err.message)
       setSubmitting(false)
     }
+  }
+
+  function handleCreateAnother() {
+    setForm(INITIAL)
+    setFile(null)
+    setFileError('')
+    setError('')
+    setCreated(null)
   }
 
   return (
@@ -274,11 +284,34 @@ function NewAirWayBill({ token, onBack, onCreated }) {
             Fill in the shipment details and attach the PDF
           </span>
         </div>
-        <button type="button" className="awb-back" onClick={onBack}>
+        <button
+          type="button"
+          className="awb-back"
+          onClick={() => (created ? onCreated() : onBack())}
+        >
           ← Back to waybills
         </button>
       </header>
 
+      {created ? (
+        <section className="awb-success">
+          <div className="awb-success-icon" aria-hidden="true">
+            ✓
+          </div>
+          <h2>Air waybill created</h2>
+          <p>
+            <strong>{created}</strong> was saved successfully.
+          </p>
+          <div className="awb-actions awb-success-actions">
+            <button type="button" className="awb-cancel" onClick={handleCreateAnother}>
+              + Create another
+            </button>
+            <button type="button" className="awb-submit" onClick={onCreated}>
+              Back to dashboard
+            </button>
+          </div>
+        </section>
+      ) : (
       <form className="awb-form" onSubmit={handleSubmit}>
         <fieldset>
           <legend>Shipment</legend>
@@ -501,6 +534,7 @@ function NewAirWayBill({ token, onBack, onCreated }) {
           </button>
         </div>
       </form>
+      )}
     </main>
   )
 }
