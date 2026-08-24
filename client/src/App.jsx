@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Login from './Login'
 import Dashboard from './Dashboard'
 import AdminPanel from './AdminPanel'
 import NewAirWayBill from './NewAirWayBill'
 import AwbDetail from './AwbDetail'
+import { setUnauthorizedHandler } from './api'
 import './App.css'
 
 function App() {
@@ -12,12 +13,27 @@ function App() {
   const [view, setView] = useState('dashboard')
   const [awbRefresh, setAwbRefresh] = useState(0)
   const [selectedAwb, setSelectedAwb] = useState(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+
+  // any 401 from the API ends the session and returns to login
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setToken(null)
+      setUser(null)
+      setSelectedAwb(null)
+      setView('dashboard')
+      setSessionExpired(true)
+    })
+  }, [])
 
   function handleLogin(token, user) {
     localStorage.setItem('token', token)
     localStorage.setItem('user', JSON.stringify(user))
     setToken(token)
     setUser(user)
+    setSessionExpired(false)
   }
 
   function handleLogout() {
@@ -67,7 +83,10 @@ function App() {
       />
     )
   ) : (
-    <Login onLogin={handleLogin} />
+    <Login
+      onLogin={handleLogin}
+      notice={sessionExpired ? 'Your session expired — please sign in again.' : ''}
+    />
   )
 }
 

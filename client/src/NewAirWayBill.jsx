@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { reportUnauthorized } from './api'
 import './NewAirWayBill.css'
 
 const MAX_PDF_MB = 16
@@ -255,6 +256,7 @@ function NewAirWayBill({ token, onBack, onCreated }) {
         /* not JSON */
       }
       if (!res.ok) {
+        if (res.status === 401) reportUnauthorized()
         throw new Error(
           payload?.error || payload?.message || `Request failed (${res.status})`
         )

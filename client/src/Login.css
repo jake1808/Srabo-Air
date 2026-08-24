@@ -77,6 +77,16 @@
   box-shadow: 0 0 0 3px rgba(224, 24, 24, 0.13);
 }
 
+.login-notice {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: #eef4fb;
+  border: 1px solid #c4d8ef;
+  border-radius: 8px;
+  color: #23527c;
+  font-size: 0.9rem;
+}
+
 .login-error {
   margin: 0 0 18px;
   padding: 10px 12px;

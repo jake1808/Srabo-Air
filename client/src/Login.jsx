@@ -3,7 +3,7 @@ import { api } from './api'
 import staboLogo from './assets/stabo-logo.png'
 import './Login.css'
 
-function Login({ onLogin }) {
+function Login({ onLogin, notice = '' }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -30,6 +30,12 @@ function Login({ onLogin }) {
     <div className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
         <img className="login-logo" src={staboLogo} alt="Stabo Air" />
+
+        {notice && (
+          <p className="login-notice" role="status">
+            {notice}
+          </p>
+        )}
 
         <h1>Sign in</h1>
         <p className="login-sub">Access your air waybill dashboard</p>
