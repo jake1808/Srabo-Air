@@ -263,6 +263,40 @@
   white-space: nowrap;
 }
 
+.admin-actions {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.admin-pw-btn {
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.admin-pw-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.admin-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .status-badge {
   display: inline-block;
   padding: 3px 10px;
@@ -425,6 +459,11 @@
     color: var(--muted);
     text-align: left;
     flex-shrink: 0;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .admin-name {

@@ -19,6 +19,12 @@ function AdminPanel({ token, user, onBack }) {
   const [formError, setFormError] = useState('')
   const [creating, setCreating] = useState(false)
 
+  const [pwFor, setPwFor] = useState(null)
+  const [pwPassword, setPwPassword] = useState('')
+  const [pwConfirm, setPwConfirm] = useState('')
+  const [pwError, setPwError] = useState('')
+  const [pwSaving, setPwSaving] = useState(false)
+
   useEffect(() => {
     api('/api/users', { token, method: 'GET' })
       .then((data) => {
@@ -73,6 +79,52 @@ function AdminPanel({ token, user, onBack }) {
       .catch((err) => {
         setSavingId(null)
         setError(err.message)
+      })
+  }
+
+  function openPasswordForm(u) {
+    setShowForm(false)
+    setPwFor(u)
+    setPwPassword('')
+    setPwConfirm('')
+    setPwError('')
+  }
+
+  function cancelPasswordForm() {
+    setPwFor(null)
+    setPwPassword('')
+    setPwConfirm('')
+    setPwError('')
+  }
+
+  function handlePasswordSubmit(e) {
+    e.preventDefault()
+    setPwError('')
+    if (pwPassword.length < 6) {
+      setPwError('Password must be at least 6 characters.')
+      return
+    }
+    if (pwPassword !== pwConfirm) {
+      setPwError('Passwords do not match.')
+      return
+    }
+    setPwSaving(true)
+    // role/active ride along because the API requires role on update;
+    // both are sent at their current values so nothing else changes
+    const isActive = pwFor.active == null ? true : !!pwFor.active
+    api(`/api/users/${pwFor.id}`, {
+      method: 'PUT',
+      body: { role: pwFor.role, active: isActive, password: pwPassword },
+      token,
+    })
+      .then(() => {
+        setPwSaving(false)
+        cancelPasswordForm()
+        flash(`Password updated for ${pwFor.name}`)
+      })
+      .catch((err) => {
+        setPwSaving(false)
+        setPwError(err.message)
       })
   }
 
@@ -193,6 +245,43 @@ function AdminPanel({ token, user, onBack }) {
         </form>
       )}
 
+      {pwFor && (
+        <form className="admin-form" onSubmit={handlePasswordSubmit}>
+          <h2>Change password — {pwFor.name}</h2>
+          <div className="admin-form-grid">
+            <label>
+              New password
+              <input
+                type="password"
+                value={pwPassword}
+                onChange={(e) => setPwPassword(e.target.value)}
+                minLength={6}
+                required
+                autoFocus
+              />
+            </label>
+            <label>
+              Confirm password
+              <input
+                type="password"
+                value={pwConfirm}
+                onChange={(e) => setPwConfirm(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+          {pwError && <p className="admin-error">{pwError}</p>}
+          <div className="admin-form-buttons">
+            <button type="button" className="admin-back" onClick={cancelPasswordForm}>
+              Cancel
+            </button>
+            <button type="submit" className="admin-new" disabled={pwSaving}>
+              {pwSaving ? 'Saving…' : 'Set new password'}
+            </button>
+          </div>
+        </form>
+      )}
+
       {loading ? null : (
         <div className="admin-table-wrap">
           <table className="admin-table">
@@ -238,13 +327,14 @@ function AdminPanel({ token, user, onBack }) {
                       </span>
                     </td>
                     <td data-label="Actions" className="actions-col">
-                      {isSelf ? (
-                        <span className="admin-hint">can’t edit yourself</span>
-                      ) : (
+                      <span className="admin-actions">
+                        {isSelf && (
+                          <span className="admin-hint">can’t edit yourself</span>
+                        )}
                         <button
                           type="button"
                           className={`admin-toggle ${isActive ? 'deactivate' : 'activate'}`}
-                          disabled={savingId === u.id}
+                          disabled={isSelf || savingId === u.id}
                           onClick={() => toggleActive(u)}
                         >
                           {savingId === u.id
@@ -253,7 +343,14 @@ function AdminPanel({ token, user, onBack }) {
                               ? 'Set inactive'
                               : 'Set active'}
                         </button>
-                      )}
+                        <button
+                          type="button"
+                          className="admin-pw-btn"
+                          onClick={() => openPasswordForm(u)}
+                        >
+                          Change password
+                        </button>
+                      </span>
                     </td>
                   </tr>
                 )
