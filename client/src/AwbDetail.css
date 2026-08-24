@@ -1,0 +1,231 @@
+/* AWB detail view (read-only). Brand: Stabo (charcoal + red, light theme). */
+
+.detail {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+}
+
+/* ---------- header ---------- */
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 16px 28px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--line);
+  border-top: 4px solid var(--stabo-red);
+}
+
+.detail-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.detail-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.detail-back {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.detail-back:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---------- cards ---------- */
+
+.detail-body {
+  width: min(880px, 100%);
+  margin: 20px auto 40px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.detail-card {
+  padding: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px -18px rgba(23, 25, 30, 0.25);
+}
+
+.detail-card h2 {
+  margin: 0 0 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--stabo-red);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detail-field.wide {
+  grid-column: 1 / -1;
+}
+
+.detail-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.detail-value {
+  font-size: 0.98rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- pdf section ---------- */
+
+.detail-pdf {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detail-pdf-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.detail-pdf-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.detail-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.detail-btn.view {
+  background: var(--stabo-red);
+  color: #fff;
+  border: none;
+}
+
+.detail-btn.view:hover:not(:disabled) {
+  background: var(--stabo-red-dark);
+}
+
+.detail-btn.download {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.detail-btn.download:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.detail-pdf-frame {
+  width: 100%;
+  height: 640px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #525659;
+}
+
+.detail-pdf-none {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.detail-pdf-error {
+  margin: 0;
+  padding: 10px 12px;
+  background: #fdeceb;
+  border: 1px solid #f3c4c2;
+  border-radius: 8px;
+  color: #b30f0f;
+  font-size: 0.9rem;
+}
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 768px) {
+  .detail-header {
+    padding: 14px 16px;
+  }
+
+  .detail-body {
+    padding: 0 16px;
+    margin-top: 14px;
+  }
+
+  .detail-card {
+    padding: 16px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .detail-pdf-actions {
+    flex-direction: column;
+  }
+
+  .detail-btn {
+    width: 100%;
+  }
+
+  .detail-pdf-frame {
+    height: 420px;
+  }
+}

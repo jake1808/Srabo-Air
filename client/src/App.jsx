@@ -3,6 +3,7 @@ import Login from './Login'
 import Dashboard from './Dashboard'
 import AdminPanel from './AdminPanel'
 import NewAirWayBill from './NewAirWayBill'
+import AwbDetail from './AwbDetail'
 import './App.css'
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')))
   const [view, setView] = useState('dashboard')
   const [awbRefresh, setAwbRefresh] = useState(0)
+  const [selectedAwb, setSelectedAwb] = useState(null)
 
   function handleLogin(token, user) {
     localStorage.setItem('token', token)
@@ -42,6 +44,14 @@ function App() {
           setView('dashboard')
         }}
       />
+    ) : view === 'awb-detail' && selectedAwb ? (
+      <AwbDetail
+        awb={selectedAwb}
+        onBack={() => {
+          setSelectedAwb(null)
+          setView('dashboard')
+        }}
+      />
     ) : (
       <Dashboard
         token={token}
@@ -49,6 +59,10 @@ function App() {
         onLogout={handleLogout}
         onOpenAdmin={() => setView('admin')}
         onNewAwb={() => setView('new-awb')}
+        onViewAwb={(awb) => {
+          setSelectedAwb(awb)
+          setView('awb-detail')
+        }}
         refreshKey={awbRefresh}
       />
     )

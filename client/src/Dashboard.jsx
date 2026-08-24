@@ -13,7 +13,7 @@ function formatDate(iso) {
   })
 }
 
-function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, refreshKey }) {
+function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, refreshKey }) {
   const [awbs, setAwbs] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -165,7 +165,16 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, refreshKey })
             </thead>
             <tbody>
               {filtered.map((a) => (
-                <tr key={a.id}>
+                <tr
+                  key={a.id}
+                  className="dash-row"
+                  tabIndex={0}
+                  title="View details"
+                  onClick={() => onViewAwb(a)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') onViewAwb(a)
+                  }}
+                >
                   <th scope="row" className="awb-no">
                     {a.awb_no}
                   </th>
