@@ -181,8 +181,17 @@
 
 /* ---------- status lines ---------- */
 
-.dash-count {
+.dash-tablebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   margin: 14px 28px 0;
+}
+
+.dash-count {
+  margin: 0;
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -279,7 +288,7 @@
 @media (max-width: 768px) {
   .dash-header,
   .dash-toolbar,
-  .dash-count,
+  .dash-tablebar,
   .dash-error {
     margin-left: 16px;
     margin-right: 16px;

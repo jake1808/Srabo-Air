@@ -98,7 +98,8 @@
   color: var(--ink);
 }
 
-.awb-grid input {
+.awb-grid input,
+.awb-grid select {
   padding: 10px 12px;
   font: inherit;
   font-weight: 400;
@@ -111,7 +112,8 @@
     box-shadow 0.15s;
 }
 
-.awb-grid input:focus {
+.awb-grid input:focus,
+.awb-grid select:focus {
   outline: none;
   border-color: var(--stabo-red);
   box-shadow: 0 0 0 3px rgba(224, 24, 24, 0.13);

@@ -67,9 +67,6 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, refreshKey })
             {user.name} ({user.role})
           </span>
         </div>
-        <button className="dash-new" onClick={onNewAwb}>
-          + New air waybill
-        </button>
         {user.role === 'admin' && (
           <button className="dash-add" onClick={onOpenAdmin}>
             Add new user
@@ -126,11 +123,16 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, refreshKey })
         </div>
       </section>
 
-      <p className="dash-count">
-        {loading
-          ? 'Loading…'
-          : `Showing ${filtered.length} of ${awbs.length} air waybills`}
-      </p>
+      <div className="dash-tablebar">
+        <p className="dash-count">
+          {loading
+            ? 'Loading…'
+            : `Showing ${filtered.length} of ${awbs.length} air waybills`}
+        </p>
+        <button className="dash-new" onClick={onNewAwb}>
+          + New air waybill
+        </button>
+      </div>
 
       {error && (
         <p className="dash-error" role="alert">
