@@ -60,6 +60,21 @@
 .dash-logout:hover {
   background: rgba(224, 24, 24, 0.07);
 }
+.dash-add {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: var(--stabo-red);
+  color: var(--card-bg);
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dash-add:hover {
+  background: rgba(224, 24, 24, 0.9);
+}
 
 /* ---------- toolbar (search + date filter) ---------- */
 

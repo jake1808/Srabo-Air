@@ -13,7 +13,7 @@ function formatDate(iso) {
   })
 }
 
-function Dashboard({ token, user, onLogout }) {
+function Dashboard({ token, user, onLogout, onOpenAdmin }) {
   const [awbs, setAwbs] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -22,7 +22,7 @@ function Dashboard({ token, user, onLogout }) {
   const [toDate, setToDate] = useState('')
 
   useEffect(() => {
-    api('/api/awbs', { token })
+    api('/api/', { token })
       .then((data) => {
         setAwbs(data.airwaybills ?? [])
         setLoading(false)
@@ -67,6 +67,11 @@ function Dashboard({ token, user, onLogout }) {
             {user.name} ({user.role})
           </span>
         </div>
+        {user.role === 'admin' && (
+          <button className="dash-add" onClick={onOpenAdmin}>
+            Add new user
+          </button>
+        )}
         <button className="dash-logout" onClick={onLogout}>
           Log out
         </button>

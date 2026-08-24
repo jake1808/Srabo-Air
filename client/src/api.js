@@ -9,7 +9,14 @@ export async function api(path, { method = 'GET', body, token } = {}) {
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+
+  // Error responses may be JSON or plain HTML (e.g. Flask 404 pages)
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    /* not JSON */
+  }
+  if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
   return data;
 }
