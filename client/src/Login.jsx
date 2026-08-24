@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { api } from './api'
+import staboLogo from './assets/stabo-logo.png'
+import './Login.css'
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('')
@@ -25,35 +27,49 @@ function Login({ onLogin }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Sign in</h1>
+    <div className="login-page">
+      <form className="login-card" onSubmit={handleSubmit}>
+        <img className="login-logo" src={staboLogo} alt="Stabo Air" />
 
-      <label>
-        Email
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </label>
+        <h1>Sign in</h1>
+        <p className="login-sub">Access your air waybill dashboard</p>
 
-      <label>
-        Password
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </label>
+        <label className="login-field">
+          Email
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            placeholder="you@stabo.aero"
+            required
+          />
+        </label>
 
-      {error && <p className="error">{error}</p>}
+        <label className="login-field">
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </label>
 
-      <button type="submit" disabled={busy}>
-        {busy ? 'Signing in…' : 'Sign in'}
-      </button>
-    </form>
+        {error && (
+          <p className="login-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button className="login-submit" type="submit" disabled={busy}>
+          {busy ? 'Signing in…' : 'Sign in'}
+        </button>
+
+        <p className="login-footer">Stabo Air · Air Waybill Management</p>
+      </form>
+    </div>
   )
 }
 

@@ -1,0 +1,351 @@
+/* Dashboard — AWB table. Brand: Stabo (charcoal + red, light theme).
+   Desktop: real table with sticky header. Mobile (<768px): rows become cards. */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.dash {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+}
+
+/* ---------- header ---------- */
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--line);
+  border-top: 4px solid var(--stabo-red);
+}
+
+.dash-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.dash-user {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dash-logout {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--stabo-red);
+  border: 1px solid var(--stabo-red);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dash-logout:hover {
+  background: rgba(224, 24, 24, 0.07);
+}
+
+/* ---------- toolbar (search + date filter) ---------- */
+
+.dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 18px 28px 0;
+}
+
+.dash-search {
+  flex: 1 1 260px;
+}
+
+.dash-search input {
+  width: 100%;
+  padding: 10px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.dash-search input:focus {
+  outline: none;
+  border-color: var(--stabo-red);
+  box-shadow: 0 0 0 3px rgba(224, 24, 24, 0.13);
+}
+
+.dash-dates {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dash-dates label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dash-dates input {
+  padding: 9px 10px;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.dash-dates input:focus {
+  outline: none;
+  border-color: var(--stabo-red);
+  box-shadow: 0 0 0 3px rgba(224, 24, 24, 0.13);
+}
+
+.dash-clear {
+  padding: 9px 14px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.dash-clear:hover {
+  color: var(--stabo-red);
+  border-color: var(--stabo-red);
+}
+
+/* ---------- status lines ---------- */
+
+.dash-count {
+  margin: 14px 28px 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.dash-error {
+  margin: 14px 28px 0;
+  padding: 10px 12px;
+  background: #fdeceb;
+  border: 1px solid #f3c4c2;
+  border-radius: 8px;
+  color: #b30f0f;
+  font-size: 0.9rem;
+}
+
+.dash-empty {
+  margin: 40px auto;
+  color: var(--muted);
+}
+
+/* ---------- table (desktop) ---------- */
+
+.dash-table-wrap {
+  margin: 14px 28px 28px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.dash-table thead th {
+  position: sticky;
+  top: 0;
+  background: #fbfbfc;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--line);
+  white-space: nowrap;
+}
+
+.dash-table tbody th,
+.dash-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  color: var(--ink);
+}
+
+.dash-table tbody tr:last-child th,
+.dash-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dash-table tbody tr:hover th,
+.dash-table tbody tr:hover td {
+  background: #fdf7f7;
+}
+
+.awb-no {
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.goods {
+  max-width: 220px;
+}
+
+.contact {
+  max-width: 200px;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- mobile: rows become cards ---------- */
+
+@media (max-width: 768px) {
+  .dash-header,
+  .dash-toolbar,
+  .dash-count,
+  .dash-error {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .dash-header {
+    padding: 14px 0;
+  }
+
+  .dash-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 14px;
+  }
+
+  .dash-dates {
+    justify-content: space-between;
+  }
+
+  .dash-dates label {
+    flex: 1;
+  }
+
+  .dash-table-wrap {
+    margin: 12px 16px 20px;
+    border: none;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .dash-table thead {
+    display: none;
+  }
+
+  .dash-table,
+  .dash-table tbody,
+  .dash-table tr,
+  .dash-table th,
+  .dash-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dash-table tbody tr {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px 0;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 14px -8px rgba(23, 25, 30, 0.12);
+  }
+
+  .dash-table tbody tr:hover th,
+  .dash-table tbody tr:hover td {
+    background: transparent;
+  }
+
+  .dash-table tbody th,
+  .dash-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 16px;
+    border-bottom: none;
+    text-align: right;
+  }
+
+  .dash-table tbody th::before,
+  .dash-table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .awb-no {
+    font-size: 1rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+  }
+
+  .awb-no::before {
+    content: none;
+  }
+
+  .num {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: normal;
+  }
+
+  .goods,
+  .contact {
+    max-width: none;
+  }
+}
