@@ -1,0 +1,269 @@
+/* New air waybill form. Brand: Stabo (charcoal + red, light theme). */
+
+.awbpage {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+}
+
+/* ---------- header ---------- */
+
+.awb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--line);
+  border-top: 4px solid var(--stabo-red);
+}
+
+.awb-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.awb-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.awb-back {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.awb-back:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---------- form ---------- */
+
+.awb-form {
+  width: min(880px, 100%);
+  margin: 20px auto 40px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.awb-form fieldset {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+  box-shadow: 0 8px 24px -18px rgba(23, 25, 30, 0.25);
+}
+
+.awb-form legend {
+  padding: 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--stabo-red);
+}
+
+.awb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.awb-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.awb-grid input {
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.awb-grid input:focus {
+  outline: none;
+  border-color: var(--stabo-red);
+  box-shadow: 0 0 0 3px rgba(224, 24, 24, 0.13);
+}
+
+.awb-hint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.awb-total {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.awb-total strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- file picker ---------- */
+
+.awb-file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 26px 18px;
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  background: #fbfbfc;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.awb-file:hover,
+.awb-file:has(input:focus-visible) {
+  border-color: var(--stabo-red);
+  background: #fdf7f7;
+}
+
+.awb-file strong {
+  color: var(--ink);
+}
+
+.awb-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* ---------- feedback & actions ---------- */
+
+.awb-error {
+  margin: 0;
+  padding: 10px 12px;
+  background: #fdeceb;
+  border: 1px solid #f3c4c2;
+  border-radius: 8px;
+  color: #b30f0f;
+  font-size: 0.9rem;
+}
+
+.awb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.awb-cancel {
+  padding: 11px 16px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.awb-cancel:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.awb-submit {
+  padding: 11px 18px;
+  background: var(--stabo-red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.awb-submit:hover:not(:disabled) {
+  background: var(--stabo-red-dark);
+}
+
+.awb-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 768px) {
+  .awb-header {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+  }
+
+  .awb-form {
+    padding: 0 16px;
+    margin-top: 14px;
+  }
+
+  .awb-form fieldset {
+    padding: 16px;
+  }
+
+  .awb-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .awb-grid label:has(input[type='text'][placeholder='583-10023549']),
+  .awb-grid label:has(input[type='text'][placeholder^='Company']),
+  .awb-grid label:has(input[type='text'][placeholder^='cartons']),
+  .awb-grid label:has(input[type='text'][placeholder^='ops@']) {
+    grid-column: 1 / -1;
+  }
+
+  .awb-actions {
+    flex-direction: column-reverse;
+  }
+
+  .awb-cancel,
+  .awb-submit {
+    width: 100%;
+  }
+}

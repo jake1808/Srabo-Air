@@ -263,44 +263,70 @@
   white-space: nowrap;
 }
 
-.admin-delete {
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.status-badge.on {
+  background: #edf7ed;
+  border: 1px solid #bfdec0;
+  color: #1d6b24;
+}
+
+.status-badge.off {
+  background: #f1f1f2;
+  border: 1px solid #d8d8dc;
+  color: #6b6f76;
+}
+
+.admin-toggle {
   padding: 7px 12px;
   background: transparent;
-  color: var(--stabo-red);
-  border: 1px solid var(--stabo-red);
-  border-radius: 8px;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.admin-delete:hover {
-  background: rgba(224, 24, 24, 0.07);
-}
-
-.admin-delete.sure {
-  background: var(--stabo-red);
-  color: #fff;
-}
-
-.admin-cancel {
-  margin-left: 8px;
-  padding: 7px 12px;
-  background: transparent;
-  color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 8px;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
-.admin-cancel:hover {
-  color: var(--ink);
-  border-color: var(--ink);
+.admin-toggle.activate {
+  background: var(--stabo-red);
+  border-color: var(--stabo-red);
+  color: #fff;
+}
+
+.admin-toggle.activate:hover:not(:disabled) {
+  background: var(--stabo-red-dark);
+}
+
+.admin-toggle.deactivate:hover:not(:disabled) {
+  color: var(--stabo-red);
+  border-color: var(--stabo-red);
+}
+
+.admin-toggle:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.inactive-row th,
+.inactive-row td {
+  background: #fafafb;
+}
+
+.inactive-row .admin-email {
+  color: #a3a9b2;
 }
 
 .admin-hint {
@@ -371,6 +397,11 @@
 
   .self-row th,
   .self-row td {
+    background: transparent;
+  }
+
+  .inactive-row th,
+  .inactive-row td {
     background: transparent;
   }
 

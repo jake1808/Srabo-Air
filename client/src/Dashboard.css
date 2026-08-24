@@ -24,7 +24,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   padding: 16px 28px;
   background: var(--card-bg);
   border-bottom: 1px solid var(--line);
@@ -60,6 +61,23 @@
 .dash-logout:hover {
   background: rgba(224, 24, 24, 0.07);
 }
+.dash-new {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background: var(--stabo-red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dash-new:hover {
+  background: var(--stabo-red-dark);
+}
+
 .dash-add {
   flex-shrink: 0;
   padding: 8px 14px;

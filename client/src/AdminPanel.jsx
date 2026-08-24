@@ -10,7 +10,6 @@ function AdminPanel({ token, user, onBack }) {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [showForm, setShowForm] = useState(false)
-  const [confirmId, setConfirmId] = useState(null)
   const [savingId, setSavingId] = useState(null)
 
   const [name, setName] = useState('')
@@ -21,7 +20,7 @@ function AdminPanel({ token, user, onBack }) {
   const [creating, setCreating] = useState(false)
 
   useEffect(() => {
-    api('/api/users', { token })
+    api('/api/users', { token, method: 'GET' })
       .then((data) => {
         setUsers(data.users ?? [])
         setLoading(false)
@@ -55,16 +54,25 @@ function AdminPanel({ token, user, onBack }) {
       })
   }
 
-  function deleteUser(u) {
-    api(`/api/users/${u.id}`, { method: 'DELETE', token })
+  function toggleActive(u) {
+    const isActive = u.active == null ? true : !!u.active
+    setSavingId(u.id)
+    // role is sent alongside because the API requires it on update
+    api(`/api/users/${u.id}`, {
+      method: 'PUT',
+      body: { role: u.role, active: !isActive },
+      token,
+    })
       .then(() => {
-        setUsers((prev) => prev.filter((x) => x.id !== u.id))
-        setConfirmId(null)
-        flash(`${u.name} was deleted`)
+        setUsers((prev) =>
+          prev.map((x) => (x.id === u.id ? { ...x, active: !isActive } : x))
+        )
+        setSavingId(null)
+        flash(`${u.name} is now ${!isActive ? 'active' : 'inactive'}`)
       })
       .catch((err) => {
+        setSavingId(null)
         setError(err.message)
-        setConfirmId(null)
       })
   }
 
@@ -193,14 +201,16 @@ function AdminPanel({ token, user, onBack }) {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Status</th>
                 <th className="actions-col">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => {
                 const isSelf = u.id === user.id
+                const isActive = u.active == null ? true : !!u.active
                 return (
-                  <tr key={u.id} className={isSelf ? 'self-row' : ''}>
+                  <tr key={u.id} className={isSelf ? 'self-row' : !isActive ? 'inactive-row' : ''}>
                     <th scope="row" className="admin-name">
                       {u.name}
                       {isSelf && <span className="you-badge">you</span>}
@@ -222,33 +232,26 @@ function AdminPanel({ token, user, onBack }) {
                         ))}
                       </select>
                     </td>
+                    <td data-label="Status">
+                      <span className={`status-badge ${isActive ? 'on' : 'off'}`}>
+                        {isActive ? 'active' : 'inactive'}
+                      </span>
+                    </td>
                     <td data-label="Actions" className="actions-col">
                       {isSelf ? (
                         <span className="admin-hint">can’t edit yourself</span>
-                      ) : confirmId === u.id ? (
-                        <span className="confirm-group">
-                          <button
-                            type="button"
-                            className="admin-delete sure"
-                            onClick={() => deleteUser(u)}
-                          >
-                            Delete for real
-                          </button>
-                          <button
-                            type="button"
-                            className="admin-cancel"
-                            onClick={() => setConfirmId(null)}
-                          >
-                            Keep
-                          </button>
-                        </span>
                       ) : (
                         <button
                           type="button"
-                          className="admin-delete"
-                          onClick={() => setConfirmId(u.id)}
+                          className={`admin-toggle ${isActive ? 'deactivate' : 'activate'}`}
+                          disabled={savingId === u.id}
+                          onClick={() => toggleActive(u)}
                         >
-                          Delete
+                          {savingId === u.id
+                            ? 'Saving…'
+                            : isActive
+                              ? 'Set inactive'
+                              : 'Set active'}
                         </button>
                       )}
                     </td>

@@ -13,7 +13,7 @@ function formatDate(iso) {
   })
 }
 
-function Dashboard({ token, user, onLogout, onOpenAdmin }) {
+function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, refreshKey }) {
   const [awbs, setAwbs] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -31,7 +31,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin }) {
         setError(err.message)
         setLoading(false)
       })
-  }, [token])
+  }, [token, refreshKey])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -67,6 +67,9 @@ function Dashboard({ token, user, onLogout, onOpenAdmin }) {
             {user.name} ({user.role})
           </span>
         </div>
+        <button className="dash-new" onClick={onNewAwb}>
+          + New air waybill
+        </button>
         {user.role === 'admin' && (
           <button className="dash-add" onClick={onOpenAdmin}>
             Add new user
