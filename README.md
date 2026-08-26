@@ -179,9 +179,144 @@ See the note under Prerequisites.
 **API returns 401 "Token has expired".**
 JWTs expire after 30 minutes — log in again.
 
-## Production (planned)
+## Production deployment (VPS — awb.stabo.com)
 
-This README covers the development setup. The production build of the client will use a
-multi-stage Dockerfile (node build stage → nginx serving the static bundle) with nginx
-proxying `/api/*` to the Flask container behind a single compose network — same
-`/api`-prefix contract, no Vite involved.
+The production stack is three containers started from one compose file:
+**nginx** serving the built React app (`client/`), **gunicorn/Flask** (`api/`), and
+**PostgreSQL** — plus the VPS's own nginx with a Let's Encrypt certificate in front
+for HTTPS. Only the client container is published (port 8080); the API and database
+are reachable only inside the Docker network.
+
+### 1. Point the domain at the VPS
+
+In your DNS panel, add an **A record**: `awb.stabo.com` → your VPS IP address.
+Wait for it to resolve (`nslookup awb.stabo.com` shows the VPS IP) before issuing
+the certificate in step 6.
+
+### 2. Prepare the VPS (Ubuntu example)
+
+```bash
+ssh root@<VPS-IP>
+apt update && apt upgrade -y
+
+# Docker Engine + compose plugin (official script)
+curl -fsSL https://get.docker.com | sh
+
+# basic firewall
+ufw allow OpenSSH
+ufw allow 80
+ufw allow 443
+ufw enable
+```
+
+### 3. Get the code and configure secrets
+
+```bash
+cd /opt
+git clone https://github.com/jake1808/Srabo-Air.git awb
+cd awb
+
+cp .env.production.example .env.production
+nano .env.production   # set strong POSTGRES_PASSWORD + SECRET_KEY
+```
+
+Generate the JWT secret with:
+`python3 -c "import secrets; print(secrets.token_hex(32))"` (or any long random string).
+
+### 4. Start the stack
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+Check it: `docker compose -f docker-compose.prod.yml ps` — all three containers
+should be `Up`. The app is now reachable on `http://<VPS-IP>:8080`.
+
+> On first start the database is created and seeded with the default users
+> (`admin@example.com` / `123456`) and sample waybills. **Sign in immediately and
+> change the admin password** (Admin panel → Change password), then delete the
+> sample data you don't want.
+
+### 5. Host nginx as HTTPS front
+
+```bash
+apt install -y nginx
+```
+
+Create `/etc/nginx/sites-available/awb.stabo.com`:
+
+```nginx
+server {
+    listen 80;
+    server_name awb.stabo.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 20m;
+    }
+}
+```
+
+Enable and reload:
+
+```bash
+ln -s /etc/nginx/sites-available/awb.stabo.com /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
+
+### 6. HTTPS with Let's Encrypt
+
+```bash
+apt install -y certbot python3-certbot-nginx
+certbot --nginx -d awb.stabo.com
+```
+
+Certbot rewrites the site to HTTPS and sets up automatic renewal. Done —
+**https://awb.stabo.com** is live.
+
+### 7. Day-2 operations
+
+**Deploy an update** (after pushing to GitHub):
+
+```bash
+cd /opt/awb
+git pull
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+**Logs:**
+
+```bash
+docker compose -f docker-compose.prod.yml logs -f api
+```
+
+**Database backup:**
+
+```bash
+docker exec stabo-prod-db pg_dump -U <POSTGRES_USER> <POSTGRES_DB> > backup_$(date +%F).sql
+```
+
+**Restore into a fresh stack:**
+
+```bash
+cat backup_2026-08-24.sql | docker exec -i stabo-prod-db psql -U <POSTGRES_USER> <POSTGRES_DB>
+```
+
+**Note on uploaded PDFs:** they are stored inside the database (base64), so
+`pg_dump` backups include them. The database volume is `prod_postgres_data` —
+do not delete it.
+
+### Production vs development
+
+| | Development | Production |
+|---|---|---|
+| Compose file | `api/docker-compose.yml` + `client/docker-compose.yml` | `docker-compose.prod.yml` |
+| Frontend | Vite dev server, hot reload (`Dockerfile.dev`) | nginx serving the built bundle (`client/Dockerfile`) |
+| API server | same image | gunicorn, 4 workers |
+| Database | port 5432 published, pgAdmin available | internal only, no pgAdmin |
+| TLS | none | VPS nginx + Let's Encrypt |
+
