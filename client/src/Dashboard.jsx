@@ -52,6 +52,10 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb }) 
 
   useEffect(() => {
     setLoading(true)
+    // guard against out-of-order responses: when deps change, the previous
+    // in-flight request is marked stale and its result is discarded
+    let stale = false
+
     const params = new URLSearchParams({
       page: String(page),
       per_page: String(PER_PAGE),
@@ -62,6 +66,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb }) 
 
     api(`/api/?${params.toString()}`, { token })
       .then((data) => {
+        if (stale) return
         setAwbs(data.airwaybills ?? [])
         setTotal(data.total ?? 0)
         setTotalPages(data.total_pages ?? 1)
@@ -69,9 +74,14 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb }) 
         setLoading(false)
       })
       .catch((err) => {
+        if (stale) return
         setError(err.message)
         setLoading(false)
       })
+
+    return () => {
+      stale = true
+    }
   }, [token, page, search, fromDate, toDate])
 
   const filtersActive = search || fromDate || toDate
