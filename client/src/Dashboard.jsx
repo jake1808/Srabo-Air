@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
 import './Dashboard.css'
 
+const PER_PAGE = 50
+
 function formatDate(iso) {
   if (!iso) return '—'
   const d = new Date(iso)
@@ -13,50 +15,77 @@ function formatDate(iso) {
   })
 }
 
-function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, refreshKey }) {
+function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb }) {
   const [awbs, setAwbs] = useState([])
-  const [error, setError] = useState('')
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  // search input is debounced so we don't hit the API on every keystroke
+  const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
 
   useEffect(() => {
-    api('/api/', { token })
+    const t = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 350)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
+  function applyDates(which, value) {
+    if (which === 'from') setFromDate(value)
+    else setToDate(value)
+    setPage(1)
+  }
+
+  function clearFilters() {
+    setSearchInput('')
+    setFromDate('')
+    setToDate('')
+    setPage(1)
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    const params = new URLSearchParams({
+      page: String(page),
+      per_page: String(PER_PAGE),
+    })
+    if (search) params.set('q', search)
+    if (fromDate) params.set('from', fromDate)
+    if (toDate) params.set('to', toDate)
+
+    api(`/api/?${params.toString()}`, { token })
       .then((data) => {
         setAwbs(data.airwaybills ?? [])
+        setTotal(data.total ?? 0)
+        setTotalPages(data.total_pages ?? 1)
+        setError('')
         setLoading(false)
       })
       .catch((err) => {
         setError(err.message)
         setLoading(false)
       })
-  }, [token, refreshKey])
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    const from = fromDate ? new Date(fromDate) : null
-    const to = toDate ? new Date(toDate) : null
-    if (to) to.setHours(23, 59, 59, 999)
-
-    return awbs.filter((a) => {
-      if (q) {
-        const haystack = [a.awb_no, a.consignee, a.airport, a.nops, a.contact]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase()
-        if (!haystack.includes(q)) return false
-      }
-      const d = a.flight_date ? new Date(a.flight_date) : null
-      if (d) {
-        if (from && d < from) return false
-        if (to && d > to) return false
-      }
-      return true
-    })
-  }, [awbs, search, fromDate, toDate])
+  }, [token, page, search, fromDate, toDate])
 
   const filtersActive = search || fromDate || toDate
+  const firstShown = total === 0 ? 0 : (page - 1) * PER_PAGE + 1
+  const lastShown = Math.min(page * PER_PAGE, total)
+
+  const pageButtons = useMemo(() => {
+    // a compact window of page numbers around the current page
+    const buttons = []
+    const start = Math.max(1, page - 2)
+    const end = Math.min(totalPages, start + 4)
+    for (let p = start; p <= end; p++) buttons.push(p)
+    return buttons
+  }, [page, totalPages])
 
   return (
     <main className="dash">
@@ -82,9 +111,9 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
           <span className="visually-hidden">Search</span>
           <input
             type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search AWB no, consignee, airport…"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search AWB no, consignee, airport, goods, contact…"
           />
         </label>
 
@@ -95,7 +124,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
               type="date"
               value={fromDate}
               max={toDate || undefined}
-              onChange={(e) => setFromDate(e.target.value)}
+              onChange={(e) => applyDates('from', e.target.value)}
             />
           </label>
           <label>
@@ -104,19 +133,11 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
               type="date"
               value={toDate}
               min={fromDate || undefined}
-              onChange={(e) => setToDate(e.target.value)}
+              onChange={(e) => applyDates('to', e.target.value)}
             />
           </label>
           {filtersActive && (
-            <button
-              type="button"
-              className="dash-clear"
-              onClick={() => {
-                setSearch('')
-                setFromDate('')
-                setToDate('')
-              }}
-            >
+            <button type="button" className="dash-clear" onClick={clearFilters}>
               Clear
             </button>
           )}
@@ -127,7 +148,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
         <p className="dash-count">
           {loading
             ? 'Loading…'
-            : `Showing ${filtered.length} of ${awbs.length} air waybills`}
+            : `Showing ${firstShown}–${lastShown} of ${total} air waybills`}
         </p>
         <button className="dash-new" onClick={onNewAwb}>
           + New air waybill
@@ -140,7 +161,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
         </p>
       )}
 
-      {loading || error ? null : filtered.length === 0 ? (
+      {loading || error ? null : awbs.length === 0 ? (
         <p className="dash-empty">
           {filtersActive
             ? 'No air waybills match your search or filters.'
@@ -164,7 +185,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
               </tr>
             </thead>
             <tbody>
-              {filtered.map((a) => (
+              {awbs.map((a) => (
                 <tr
                   key={a.id}
                   className="dash-row"
@@ -194,7 +215,7 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
                     {a.total} {a.currency}
                   </td>
                   <td data-label="Goods" className="goods">
-                    {a.nops}
+                    {a.nog}
                   </td>
                   <td data-label="Contact" className="contact">
                     {a.contact}
@@ -204,6 +225,54 @@ function Dashboard({ token, user, onLogout, onOpenAdmin, onNewAwb, onViewAwb, re
             </tbody>
           </table>
         </div>
+      )}
+
+      {totalPages > 1 && (
+        <nav className="dash-pager" aria-label="Pagination">
+          <button
+            type="button"
+            className="dash-page"
+            disabled={page <= 1 || loading}
+            onClick={() => setPage(1)}
+          >
+            « First
+          </button>
+          <button
+            type="button"
+            className="dash-page"
+            disabled={page <= 1 || loading}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ‹ Prev
+          </button>
+          {pageButtons.map((p) => (
+            <button
+              key={p}
+              type="button"
+              className={`dash-page${p === page ? ' current' : ''}`}
+              disabled={loading}
+              onClick={() => setPage(p)}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="dash-page"
+            disabled={page >= totalPages || loading}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next ›
+          </button>
+          <button
+            type="button"
+            className="dash-page"
+            disabled={page >= totalPages || loading}
+            onClick={() => setPage(totalPages)}
+          >
+            Last »
+          </button>
+        </nav>
       )}
     </main>
   )

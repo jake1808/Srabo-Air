@@ -211,6 +211,62 @@
   color: var(--muted);
 }
 
+/* ---------- pagination ---------- */
+
+.dash-pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 28px 28px;
+}
+
+.dash-page {
+  min-width: 38px;
+  padding: 8px 10px;
+  background: var(--card-bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.dash-page:hover:not(:disabled):not(.current) {
+  border-color: var(--stabo-red);
+  color: var(--stabo-red);
+}
+
+.dash-page.current {
+  background: var(--stabo-red);
+  border-color: var(--stabo-red);
+  color: #fff;
+  cursor: default;
+}
+
+.dash-page:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .dash-pager {
+    margin: 4px 16px 20px;
+  }
+
+  .dash-page {
+    min-width: 34px;
+    padding: 7px 8px;
+    font-size: 0.8rem;
+  }
+}
+
 /* ---------- table (desktop) ---------- */
 
 .dash-table-wrap {

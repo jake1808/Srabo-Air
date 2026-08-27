@@ -104,9 +104,9 @@ function AwbDetail({ awb, onBack }) {
             <Field label="Gross weight (kg)" value={awb.gross_weight} />
             <Field label="Chargeable weight (kg)" value={awb.chargeable_weight} />
             <Field label="Rate (per kg)" value={awb.rate} />
-            <Field label="Pieces" value={awb.nog} />
+            <Field label="Pieces" value={awb.nops} />
             <Field label="Total" value={`${awb.total} ${awb.currency}`} />
-            <Field label="Goods description" value={awb.nops} wide />
+            <Field label="Goods description" value={awb.nog} wide />
           </div>
         </section>
 

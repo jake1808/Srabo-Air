@@ -416,8 +416,8 @@ function NewAirWayBill({ token, onBack, onCreated }) {
                 type="number"
                 min="0"
                 step="1"
-                value={form.nog}
-                onChange={(e) => set('nog', e.target.value)}
+                value={form.nops}
+                onChange={(e) => set('nops', e.target.value)}
                 required
               />
             </label>
@@ -425,8 +425,8 @@ function NewAirWayBill({ token, onBack, onCreated }) {
               Goods description
               <input
                 type="text"
-                value={form.nops}
-                onChange={(e) => set('nops', e.target.value)}
+                value={form.nog}
+                onChange={(e) => set('nog', e.target.value)}
                 placeholder="cartons, machinery parts"
                 required
               />
